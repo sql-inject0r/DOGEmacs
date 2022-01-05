@@ -1,0 +1,5 @@
+* Installation -
+  - if you want to use my config then copy and paste this in your term
+    #+BEGIN_SRC sh
+      git clone https://github.com/sql-inject0r/DOGEmacs.git ~/.emacs.d
+    #+END_SRC
