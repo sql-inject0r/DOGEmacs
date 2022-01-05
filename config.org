@@ -1,0 +1,358 @@
+* Basic Settings 
+** Basic Looks
+   - just how the editor looks 
+  #+BEGIN_SRC emacs-lisp
+    (menu-bar-mode -1)
+    (tool-bar-mode -1)
+    (scroll-bar-mode -1)
+  #+END_SRC
+** Startup Screen
+   - This code will get rid of the ugly startup screen
+     #+BEGIN_SRC emacs-lisp
+       (setq inhibit-startup-message t)
+     #+END_SRC
+  
+** Bell
+   - Getting rid of the warning bell
+     #+BEGIN_SRC emacs-lisp
+       (setq ring-bell-function 'ignore)
+     #+END_SRC
+** Disable backups and autosaves
+   - I hate autosaves and backups, this elisp code will get rid of them 
+   - change nil to t if you want autosaves and backups 
+   #+BEGIN_SRC emacs-lisp
+     (setq make-backup-files nil)
+     (setq auto-save-default nil)
+   #+END_SRC
+** Alias
+   - Alias for yes or no
+     #+BEGIN_SRC emacs-lisp
+       (defalias 'yes-or-no-p 'y-or-n-p)
+     #+END_SRC
+     
+** Global highlight mode
+   - highlight the current line for better visibility
+     #+BEGIN_SRC emacs-lisp
+       (global-hl-line-mode t)
+     #+END_SRC
+
+** Pretty symbols
+   - pretty symbols for typing in GUI eg lambda
+     #+BEGIN_SRC emacs-lisp
+       (when window-system (global-prettify-symbols-mode t))
+     #+END_SRC
+** Font
+   - I use JetBrains Mono font and reccomend you to use this aswell
+     #+BEGIN_SRC emacs-lisp
+       (add-to-list 'default-frame-alist
+			 '(font . "JetBrains Mono-14"))
+     #+END_SRC
+** show lines and columns in modeline
+   #+BEGIN_SRC emacs-lisp
+     (line-number-mode 1)
+     (column-number-mode 1)
+   #+END_SRC
+** Icons
+   - Required for the modeline !
+     #+BEGIN_SRC emacs-lisp
+       (use-package all-the-icons
+	 :ensure t)
+     #+END_SRC
+** show lines and columns
+   - dont need to explain this
+     #+BEGIN_SRC emacs-lisp
+       (line-number-mode 1)
+       (column-number-mode 1)
+     #+END_SRC
+** pdf tools -
+   #+BEGIN_SRC emacs-lisp
+     (use-package pdf-tools
+       :ensure t
+       :config
+       (pdf-tools-install))
+   #+END_SRC
+** Plugin for discord
+   - to show that I'm using emacs in discord
+     #+BEGIN_SRC emacs-lisp
+       (require 'elcord)
+       (elcord-mode)
+     #+END_SRC
+* Theme
+  - I'm using the doom emacs theme
+  - I also would reccomend you to try out cyberpunk theme
+    #+BEGIN_SRC emacs-lisp
+      (use-package doom-themes
+	:ensure t
+	:config
+	(load-theme 'doom-acario-dark t))
+    #+END_SRC
+
+* Which Key
+  - which key is a package that helps you find keyboard shortcuts
+    #+BEGIN_SRC emacs-lisp
+      (use-package which-key
+	:ensure t
+	:init
+	(which-key-mode))
+    #+END_SRC
+
+* Hungry delete
+  - Much better than typing backspace 1000 times
+    #+BEGIN_SRC emacs-lisp
+      (use-package hungry-delete
+	:ensure t
+	:config (global-hungry-delete-mode))
+    #+END_SRC 
+* Beacon
+  - A package that helps you find your cursor
+    #+BEGIN_SRC emacs-lisp
+      (use-package beacon
+	:ensure t
+	:init
+	(beacon-mode t))
+    #+END_SRC
+
+* Terminal
+** ansi term -
+   - I use ansi term as my default terminal inside emacs
+   - Here I'm using bash as my shell, change your shells name after the /bin command
+   #+BEGIN_SRC emacs-lisp
+     (defvar my-term-shell "/bin/bash")
+     (defadvice ansi-term (before force-bash)
+       (interactive(list my-term-shell)))
+     (ad-activate 'ansi-term)
+   #+END_SRC
+
+** keyboard shortcut for ansi term -
+   #+BEGIN_SRC emacs-lisp
+     (global-set-key (kbd "M-k") 'ansi-term)
+   #+END_SRC
+
+* IDO
+** Enabling IDO mode -
+   - much better way to switch buffers
+   #+BEGIN_SRC emacs-lisp
+     (setq ido-enable-flex-matching nil)
+     (setq ido-create-new-buffer 'always)
+     (setq ido-everywhere t)
+     (ido-mode 1)
+   #+END_SRC
+** IDO vertiacal mode -
+   - IDO by default shows buffers in horizontal mode which sucks
+   - there is a package that shows buffers in vertical mode
+     #+BEGIN_SRC emacs-lisp
+       (use-package ido-vertical-mode
+	 :ensure t
+	 :init
+	 (ido-vertical-mode 1))
+       (setq ido-vertical-define-keys 'C-n-and-C-p-only)
+     #+END_SRC
+     
+* Custom Functions
+** Visit init.el
+   - going to init.el and manually reloading the config is annoying
+   - writing a function in elisp to do this automatically
+   #+BEGIN_SRC emacs-lisp
+     (defun init-visit ()
+       (interactive)
+       (find-file "~/.emacs.d/init.el"))
+     ;;assigning a keyboard shortcut to it -
+     (global-set-key (kbd "C-c i") 'init-visit)
+   #+END_SRC
+
+** Visit config.org
+   - another function to visit the config file
+     #+BEGIN_SRC emacs-lisp
+       (defun config-visit ()
+       (interactive)
+       (find-file "~/.emacs.d/config.org"))
+       (global-set-key (kbd "C-c e") 'config-visit)
+     #+END_SRC
+
+** reload the config
+   - reloading the config file with a shortcut
+   #+BEGIN_SRC emacs-lisp
+     (defun config-reload ()
+       (interactive)
+       (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
+     ;;Assigning the shortcut
+     (global-set-key (kbd "C-c r") 'config-reload)
+   #+END_SRC
+
+** splitting window horizontal
+   - splitting windows without C-x o horizontally
+   #+BEGIN_SRC emacs-lisp
+     (defun spilt-horizontally ()
+       (interactive)
+       (split-window-below)
+       (balance-windows)
+       (other-window 1))
+     ;;keyboard shortcut
+     (global-set-key (kbd "C-x 2") 'spilt-horizontally)
+   #+END_SRC
+** splitting window vertically
+   - splitting window vertically without C-x o vertically
+   #+BEGIN_SRC emacs-lisp
+     (defun spilt-vertically ()
+       (interactive)
+       (split-window-right)
+       (balance-windows)
+       (other-window 1))
+     ;;keyboard shortcut
+     (global-set-key (kbd "C-x 3") 'spilt-vertically)
+   #+END_SRC
+** Kill the whole word
+   - Just a simple function in elsip to kill whole word cause I'm Lazy
+     #+BEGIN_SRC emacs-lisp
+       (defun kill-whole-word ()
+	 (interactive)
+	 (backward-word)
+	 (kill-word 1))
+       (global-set-key (kbd "C-c w w") 'kill-whole-word)
+     #+END_SRC
+** Kill current buffer
+   - kills the current buffer
+     #+BEGIN_SRC emacs-lisp
+       (defun kill-current-buffer ()
+	 (interactive)
+	 (kill-buffer (current-buffer))
+	 )
+       (global-set-key (kbd "C-x k") 'kill-current-buffer)
+     #+END_SRC
+* Rainbow
+   - A simple package that converts hexadecimel to their respective colors
+   - Really useful if your a web dev (your the reason for web bloat MR)
+   - example #ff8c00
+
+     #+BEGIN_SRC emacs-lisp
+       (use-package rainbow-mode
+	 :ensure t
+	 :init
+	 (rainbow-mode 1))
+     #+END_SRC
+     
+* Window movement
+** Switching windows in smarter way
+   - If you larger screen then this might be for you
+   - Switching to multiple windows without using C-x o
+   - The package I'm using is switch-window  
+     #+BEGIN_SRC emacs-lisp
+       (use-package switch-window
+	 :ensure t
+	 :config
+	 (setq switch-window-input-style 'minibuffer)
+	 (setq switch-window-increase 4)
+	 (setq switch-window-threshold 2)
+	 (setq switch-window-shortcut-style 'qwerty)
+	 (setq switch-window-qwerty-shortcuts
+		     '("a" "s" "d" "f" "h" "j" "k" "l"))
+	 :bind
+	 ([remap other-window] . switch-window))
+     #+END_SRC
+
+* Org
+** Org bullets -
+   - a package to make org mode look good
+   #+BEGIN_SRC emacs-lisp
+     (use-package org-bullets
+       :ensure t
+       :config
+       (add-hook 'org-mode-hook  (org-bullets-mode)))
+   #+END_SRC
+* Electric pair mode
+  - auto completion for basic syntax
+  #+BEGIN_SRC emacs-lisp
+    (setq electric-pair-pairs '(
+				 (?\{ . ?\})
+				 (?\( . ?\))
+				 (?\[ . ?\])
+				 (?\" . ?\")
+				 (?\< .?\>)
+				 ))
+    (electric-pair-mode t)
+  #+END_SRC
+
+* Swiper
+  - Much better way to search in emacs !
+    #+BEGIN_SRC emacs-lisp
+      (use-package swiper
+	:ensure t
+	:bind ("C-s" . swiper))
+    #+END_SRC
+
+* Kill ring and popup menu
+  - An amazing package
+  - Uses the kill ring to select items that were deleted
+  - I'm using "M-y" as its shortcut ,change it if you want !
+  #+BEGIN_SRC emacs-lisp
+    (use-package popup-kill-ring
+      :ensure t
+      :bind
+      ("M-y" . popup-kill-ring))
+  #+END_SRC
+    
+* Modeline
+** Doom emacs modeline -
+   - Since I started my emacs journey with doom emacs I will be using its modeline
+   - I also reccomend spacemacs modeline as well
+     #+BEGIN_SRC emacs-lisp
+       (use-package doom-modeline
+	 :ensure t
+	 :hook (after-init . doom-modeline-mode))
+
+     #+END_SRC  
+
+* Dashboard
+  - Setting up a good looking dashboard
+  - Much better to see this rather than default screen
+    #+BEGIN_SRC emacs-lisp
+      (use-package dashboard
+	:ensure t
+	:config
+	(dashboard-setup-startup-hook)
+	(setq dashboard-startup-logo-title "HACKERMAN TIME"))
+    #+END_SRC
+* Games
+  - A couple of games that I like
+** pacmacs
+   #+BEGIN_SRC emacs-lisp
+     (use-package pacmacs
+       :ensure t)
+   #+END_SRC
+* Programming
+** Yasnipper
+   #+BEGIN_SRC emacs-lisp
+     (use-package yasnippet
+       :ensure t
+       :config
+	 (use-package yasnippet-snippets
+	   :ensure t)
+	 (yas-reload-all))
+   #+END_SRC
+
+** Flycheck
+   #+BEGIN_SRC emacs-lisp
+     (use-package flycheck
+       :ensure t)
+   #+END_SRC
+
+** Company
+   #+BEGIN_SRC emacs-lisp
+     (use-package company
+       :ensure t
+       :config
+       (setq company-idle-delay 0)
+       (setq company-minimum-prefix-length 3))
+
+     (with-eval-after-load 'company
+       (define-key company-active-map (kbd "M-n") nil)
+       (define-key company-active-map (kbd "M-p") nil)
+       (define-key company-active-map (kbd "C-n") #'company-select-next)
+       (define-key company-active-map (kbd "C-p") #'company-select-previous)
+       (define-key company-active-map (kbd "SPC") #'company-abort))
+   #+END_SRC
+** python
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'python-mode-hook 'jedi:setup)
+     (setq jedi:complete-on-dot t)                 ; optional
+   #+END_SRC
