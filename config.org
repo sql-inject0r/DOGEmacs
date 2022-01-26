@@ -358,3 +358,16 @@
      (add-hook 'python-mode-hook 'jedi:setup)
      (setq jedi:complete-on-dot t)                 ; optional
    #+END_SRC
+
+* Treemacs
+  - A tree layout file exployer like vscode
+    #+BEGIN_SRC emacs-lisp
+      (use-package treemacs
+	:ensure t
+	:bind
+	(:map global-map
+	      ([f1] . treemacs)
+	      ("C-<f1>" . treemacs-select-window))
+	:config
+	(setq treemacs-is-never-other-window t))
+    #+END_SRC    
