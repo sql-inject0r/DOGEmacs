@@ -74,6 +74,8 @@
 ** Plugin for discord
    - to show that I'm using emacs in discord
      #+BEGIN_SRC emacs-lisp
+       (use-package elcord
+	 :ensure t)
        (require 'elcord)
        (elcord-mode)
      #+END_SRC
